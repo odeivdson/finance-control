@@ -1,0 +1,50 @@
+@page "{id:guid}"
+@model Web.Pages.Transacoes.EditModel
+@{
+    ViewData["Title"] = "Editar Transação";
+}
+
+<h1>Editar Transação</h1>
+
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Transacao.Id" />
+    <div class="mb-3">
+        <label asp-for="Transacao.Descricao" class="form-label"></label>
+        <input asp-for="Transacao.Descricao" class="form-control" />
+        <span asp-validation-for="Transacao.Descricao" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Transacao.Data" class="form-label"></label>
+        <input asp-for="Transacao.Data" class="form-control" type="date" />
+        <span asp-validation-for="Transacao.Data" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Transacao.Valor" class="form-label"></label>
+        <input asp-for="Transacao.Valor" class="form-control" />
+        <span asp-validation-for="Transacao.Valor" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Transacao.CategoriaId" class="form-label"></label>
+        <select asp-for="Transacao.CategoriaId" class="form-select" asp-items="Model.Categorias"></select>
+        <span asp-validation-for="Transacao.CategoriaId" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Transacao.Tipo" class="form-label"></label>
+        <select asp-for="Transacao.Tipo" class="form-select">
+            <option value="1">Receita</option>
+            <option value="2">Despesa</option>
+        </select>
+        <span asp-validation-for="Transacao.Tipo" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Transacao.Status" class="form-label"></label>
+        <select asp-for="Transacao.Status" class="form-select">
+            <option value="1">Pendente</option>
+            <option value="2">Quitado</option>
+        </select>
+        <span asp-validation-for="Transacao.Status" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Salvar</button>
+    <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
+</form>

@@ -1,0 +1,30 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Início";
+}
+
+<div class="text-center mt-5">
+    <h1 class="display-3 mb-4"><i class="bi bi-cash-coin"></i> Financeiro Pessoal</h1>
+    <p class="lead mb-4">Gerencie suas transações, categorias, metas e visualize suas parcelas de forma simples e intuitiva.</p>
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-2 mb-2">
+            <a class="btn btn-outline-primary w-100" href="/Transacoes/Index"><i class="bi bi-cash-coin"></i> Transações</a>
+        </div>
+        <div class="col-md-2 mb-2">
+            <a class="btn btn-outline-secondary w-100" href="/Categorias/Index"><i class="bi bi-tags"></i> Categorias</a>
+        </div>
+        <div class="col-md-2 mb-2">
+            <a class="btn btn-outline-success w-100" href="/Metas/Index"><i class="bi bi-bullseye"></i> Metas</a>
+        </div>
+        <div class="col-md-2 mb-2">
+            <a class="btn btn-outline-info w-100" href="/Parcelas/Index"><i class="bi bi-list-ol"></i> Parcelas</a>
+        </div>
+        <div class="col-md-2 mb-2">
+            <a class="btn btn-outline-dark w-100" href="/Dashboard"><i class="bi bi-bar-chart"></i> Dashboard</a>
+        </div>
+    </div>
+    <div class="alert alert-info mt-4">
+        <i class="bi bi-lightbulb"></i> Dica: Utilize o menu acima para navegar entre as principais funcionalidades do sistema.
+    </div>
+</div>

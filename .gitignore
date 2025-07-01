@@ -52,3 +52,35 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Ignore arquivos de banco de dados SQLite e outros bancos locais
+*.db
+*.sqlite
+*.sqlite3
+*.mdf
+*.ldf
+
+# Ignore pastas e arquivos de build do .NET
+bin/
+obj/
+
+# Ignore arquivos de usuário e configurações locais
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Ignore logs e arquivos temporários
+*.log
+*.tmp
+
+# Ignore arquivos de publish
+publish/
+
+# Ignore arquivos de backup
+*~
+
+# Ignore secrets
+secrets.json
+appsettings.Development.json

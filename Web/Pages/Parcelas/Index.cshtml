@@ -1,0 +1,66 @@
+@page
+@model Web.Pages.Parcelas.IndexModel
+@{
+    ViewData["Title"] = "Parcelas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="display-6"><i class="bi bi-list-ol"></i> Parcelas</h2>
+    <a asp-page="Create" asp-route-transacaoId="@Model.TransacaoId" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Nova Parcela
+    </a>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table table-hover table-bordered shadow-sm">
+    <thead class="table-light">
+        <tr>
+            <th>Número</th>
+            <th>Valor</th>
+            <th>Data Vencimento</th>
+            <th>Status</th>
+            <th style="width:220px">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var parcela in Model.Parcelas)
+        {
+            <tr>
+                <td>@parcela.Numero</td>
+                <td>@parcela.Valor.ToString("C")</td>
+                <td>@parcela.DataVencimento.ToShortDateString()</td>
+                <td>@(parcela.Status == 1 ? "Pendente" : "Quitada")</td>
+                <td>
+                    <a asp-page="Details" asp-route-id="@parcela.Id" class="btn btn-info btn-sm"><i class="bi bi-eye"></i></a>
+                    <a asp-page="Edit" asp-route-id="@parcela.Id" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
+                    <a asp-page="Delete" asp-route-id="@parcela.Id" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
+                    <a asp-page="/Transacoes/Details" asp-route-id="@parcela.TransacaoId" class="btn btn-secondary btn-sm"><i class="bi bi-cash-coin"></i> Transação</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.TotalPages > 1)
+{
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="?CurrentPage=@(Model.CurrentPage - 1)@Model.GetQueryString()" tabindex="-1">Anterior</a>
+            </li>
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                    <a class="page-link" href="?CurrentPage=@i@Model.GetQueryString()">@i</a>
+                </li>
+            }
+            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                <a class="page-link" href="?CurrentPage=@(Model.CurrentPage + 1)@Model.GetQueryString()">Próxima</a>
+            </li>
+        </ul>
+    </nav>
+}

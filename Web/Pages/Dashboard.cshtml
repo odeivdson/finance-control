@@ -1,0 +1,239 @@
+@page
+@model Web.Pages.DashboardModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid">
+    <h1 class="mb-4"><i class="bi bi-bar-chart"></i> Dashboard Financeiro</h1>
+
+    <form method="get" class="row g-3 mb-4 bg-light p-3 rounded shadow-sm">
+        <div class="col-md-3">
+            <label for="DataInicio" class="form-label">Data Início</label>
+            <input type="date" name="DataInicio" value="@Model.DataInicio?.ToString("yyyy-MM-dd")" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label for="DataFim" class="form-label">Data Fim</label>
+            <input type="date" name="DataFim" value="@Model.DataFim?.ToString("yyyy-MM-dd")" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <label for="Tipo" class="form-label">Tipo</label>
+            <select name="Tipo" class="form-select">
+                @Html.Raw("<option value=\"\">Todos</option>")
+                @Html.Raw("<option value=\"1\"" + (Model.Tipo == 1 ? " selected" : "") + ">Receita</option>")
+                @Html.Raw("<option value=\"2\"" + (Model.Tipo == 2 ? " selected" : "") + ">Despesa</option>")
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label for="Status" class="form-label">Status</label>
+            <select name="Status" class="form-select">
+                @Html.Raw("<option value=\"\">Todos</option>")
+                @Html.Raw("<option value=\"1\"" + (Model.Status == 1 ? " selected" : "") + ">Pendente</option>")
+                @Html.Raw("<option value=\"2\"" + (Model.Status == 2 ? " selected" : "") + ">Quitado</option>")
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label for="CategoriaId" class="form-label">Categoria</label>
+            <select name="CategoriaId" class="form-select">
+                @Html.Raw("<option value=\"\">Todas</option>")
+                @if (Model.CategoriasFiltro != null)
+                {
+                    foreach (var cat in Model.CategoriasFiltro)
+                    {
+                        var selected = Model.CategoriaId.HasValue && Model.CategoriaId.Value.ToString() == cat.Value ? " selected" : "";
+                        @Html.Raw($"<option value=\"{cat.Value}\"{selected}>{cat.Text}</option>")
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-12 d-flex justify-content-end">
+            <button type="submit" class="btn btn-outline-primary mt-2"><i class="bi bi-search"></i> Filtrar</button>
+        </div>
+    </form>
+
+    @if (Model.TotalReceitas == 0 && Model.TotalDespesas == 0)
+    {
+        <div class="alert alert-info">Nenhuma transação encontrada para os filtros selecionados.</div>
+    }
+
+    <div class="row mb-4 g-3">
+        <div class="col-md-4">
+            <div class="card text-white bg-success h-100 shadow">
+                <div class="card-body d-flex align-items-center">
+                    <i class="bi bi-cash-coin display-4 me-3"></i>
+                    <div>
+                        <div class="card-title fw-bold">Total de Receitas</div>
+                        <h4 class="mb-0">@Model.TotalReceitas.ToString("C")</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-danger h-100 shadow">
+                <div class="card-body d-flex align-items-center">
+                    <i class="bi bi-cart-x display-4 me-3"></i>
+                    <div>
+                        <div class="card-title fw-bold">Total de Despesas</div>
+                        <h4 class="mb-0">@Model.TotalDespesas.ToString("C")</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-primary h-100 shadow">
+                <div class="card-body d-flex align-items-center">
+                    <i class="bi bi-wallet2 display-4 me-3"></i>
+                    <div>
+                        <div class="card-title fw-bold">Saldo</div>
+                        <h4 class="mb-0">@((Model.TotalReceitas - Model.TotalDespesas).ToString("C"))</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4 g-3">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="card-title mb-0"><i class="bi bi-graph-up"></i> Evolução de Receitas e Despesas</h5>
+                        <div>
+                            <button class="btn btn-outline-secondary btn-sm me-2" id="btnExportPdf"><i class="bi bi-file-earmark-pdf"></i> Exportar PDF</button>
+                            <button class="btn btn-outline-success btn-sm" id="btnExportExcel"><i class="bi bi-file-earmark-excel"></i> Exportar Excel</button>
+                        </div>
+                    </div>
+                    <canvas id="evolucaoChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4 g-3">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3"><i class="bi bi-bar-chart-line"></i> Comparativo: Mês Atual vs. Mês Anterior</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="bg-light p-3 rounded mb-2">
+                                <strong>Mês Atual:</strong> <span id="mesAtualLabel"></span><br />
+                                <span id="mesAtualReceita"></span> / <span id="mesAtualDespesa"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bg-light p-3 rounded mb-2">
+                                <strong>Mês Anterior:</strong> <span id="mesAnteriorLabel"></span><br />
+                                <span id="mesAnteriorReceita"></span> / <span id="mesAnteriorDespesa"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <canvas id="comparativoChart" height="60"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Serialização camelCase para o JS
+        const resumoMensal = JSON.parse('@(System.Text.Json.JsonSerializer.Serialize(Model.ResumoMensal ?? new List<Web.Pages.DashboardModel.DashboardResumoMensal>(), new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }))');
+        // Gráfico de evolução
+        const ctxEvolucao = document.getElementById('evolucaoChart').getContext('2d');
+        const evolucaoChart = new Chart(ctxEvolucao, {
+            type: 'line',
+            data: {
+                labels: resumoMensal.map(x => `${x.mes}/${x.ano}`),
+                datasets: [
+                    {
+                        label: 'Receitas',
+                        data: resumoMensal.map(x => x.receitas),
+                        borderColor: 'green',
+                        backgroundColor: 'rgba(0,128,0,0.1)',
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Despesas',
+                        data: resumoMensal.map(x => x.despesas),
+                        borderColor: 'red',
+                        backgroundColor: 'rgba(255,0,0,0.1)',
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    zoom: {
+                        pan: { enabled: true, mode: 'x' },
+                        zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
+                    },
+                    tooltip: { enabled: true }
+                }
+            }
+        });
+        // Comparativo mês atual vs anterior
+        let mesAtual, anoAtual, mesAnterior, anoAnterior;
+        if (resumoMensal.length > 0) {
+            const ultimo = resumoMensal[resumoMensal.length - 1];
+            mesAtual = ultimo.mes;
+            anoAtual = ultimo.ano;
+            if (resumoMensal.length > 1) {
+                const penultimo = resumoMensal[resumoMensal.length - 2];
+                mesAnterior = penultimo.mes;
+                anoAnterior = penultimo.ano;
+            } else {
+                mesAnterior = mesAtual === 1 ? 12 : mesAtual - 1;
+                anoAnterior = mesAtual === 1 ? anoAtual - 1 : anoAtual;
+            }
+        } else {
+            const now = new Date();
+            mesAtual = now.getMonth() + 1;
+            anoAtual = now.getFullYear();
+            mesAnterior = mesAtual === 1 ? 12 : mesAtual - 1;
+            anoAnterior = mesAtual === 1 ? anoAtual - 1 : anoAtual;
+        }
+        const atual = resumoMensal.find(x => x.ano === anoAtual && x.mes === mesAtual) || { receitas: 0, despesas: 0 };
+        const anterior = resumoMensal.find(x => x.ano === anoAnterior && x.mes === mesAnterior) || { receitas: 0, despesas: 0 };
+        document.getElementById('mesAtualLabel').innerText = `${mesAtual}/${anoAtual}`;
+        document.getElementById('mesAtualReceita').innerText = `Receitas: R$ ${atual.receitas?.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+        document.getElementById('mesAtualDespesa').innerText = `Despesas: R$ ${atual.despesas?.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+        document.getElementById('mesAnteriorLabel').innerText = `${mesAnterior}/${anoAnterior}`;
+        document.getElementById('mesAnteriorReceita').innerText = `Receitas: R$ ${anterior.receitas?.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+        document.getElementById('mesAnteriorDespesa').innerText = `Despesas: R$ ${anterior.despesas?.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+        const ctxComparativo = document.getElementById('comparativoChart').getContext('2d');
+        new Chart(ctxComparativo, {
+            type: 'bar',
+            data: {
+                labels: ['Receitas', 'Despesas'],
+                datasets: [
+                    {
+                        label: `${mesAtual}/${anoAtual}`,
+                        data: [atual.receitas, atual.despesas],
+                        backgroundColor: ['green', 'red']
+                    },
+                    {
+                        label: `${mesAnterior}/${anoAnterior}`,
+                        data: [anterior.receitas, anterior.despesas],
+                        backgroundColor: ['#90ee90', '#ffb3b3']
+                    }
+                ]
+            },
+            options: { responsive: true, plugins: { tooltip: { enabled: true } } }
+        });
+        // Exportação PDF/Excel (simples, pode ser aprimorado)
+        document.getElementById('btnExportPdf').onclick = function () {
+            window.print();
+        };
+        document.getElementById('btnExportExcel').onclick = function () {
+            let csv = 'Mês/Ano,Receitas,Despesas\n';
+            resumoMensal.forEach(x => {
+                csv += `${x.mes}/${x.ano},${x.receitas},${x.despesas}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'dashboard.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        };
+    </script>
+</div>

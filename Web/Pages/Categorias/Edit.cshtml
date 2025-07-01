@@ -1,0 +1,21 @@
+@page "{id:guid}"
+@model Web.Pages.Categorias.EditModel
+@{
+    ViewData["Title"] = "Editar Categoria";
+}
+
+<h2>Editar Categoria</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+<form method="post">
+    <div class="form-group">
+        <label asp-for="Categoria.Nome"></label>
+        <input asp-for="Categoria.Nome" class="form-control" />
+        <span asp-validation-for="Categoria.Nome" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Salvar</button>
+    <a asp-page="Index" class="btn btn-secondary">Voltar</a>
+</form>

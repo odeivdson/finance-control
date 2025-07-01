@@ -1,0 +1,62 @@
+@page
+@model Web.Pages.Transacoes.CreateModel
+@{
+    ViewData["Title"] = "Nova Transação";
+}
+
+<h1>Nova Transação</h1>
+
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="Transacao.Descricao" class="form-label"></label>
+        <input asp-for="Transacao.Descricao" class="form-control" />
+        <span asp-validation-for="Transacao.Descricao" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Transacao.Data" class="form-label"></label>
+        <input asp-for="Transacao.Data" class="form-control" type="date" />
+        <span asp-validation-for="Transacao.Data" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Transacao.Valor" class="form-label"></label>
+        <input asp-for="Transacao.Valor" class="form-control" />
+        <span asp-validation-for="Transacao.Valor" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Transacao.CategoriaId" class="form-label"></label>
+        <select name="Transacao.CategoriaId" class="form-select">
+            <option value="">Selecione</option>
+            @foreach (var cat in Model.Categorias)
+            {
+                var selected = cat.Selected ? " selected" : "";
+                @Html.Raw($"<option value=\"{cat.Value}\"{selected}>{cat.Text}</option>");
+            }
+        </select>
+        <span asp-validation-for="Transacao.CategoriaId" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Transacao.Tipo" class="form-label"></label>
+        <select name="Transacao.Tipo" class="form-select">
+            @{
+                var tipo = Model.Transacao.Tipo;
+                @Html.Raw("<option value=\"1\"" + (tipo == 1 ? " selected" : "") + ">Receita</option>");
+                @Html.Raw("<option value=\"2\"" + (tipo == 2 ? " selected" : "") + ">Despesa</option>");
+            }
+        </select>
+        <span asp-validation-for="Transacao.Tipo" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Transacao.Status" class="form-label"></label>
+        <select name="Transacao.Status" class="form-select">
+            @{
+                var status = Model.Transacao.Status;
+                @Html.Raw("<option value=\"1\"" + (status == 1 ? " selected" : "") + ">Pendente</option>");
+                @Html.Raw("<option value=\"2\"" + (status == 2 ? " selected" : "") + ">Quitado</option>");
+            }
+        </select>
+        <span asp-validation-for="Transacao.Status" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Salvar</button>
+    <a asp-page="/Index" class="btn btn-secondary">Cancelar</a>
+</form>

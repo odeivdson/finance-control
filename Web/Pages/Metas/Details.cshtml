@@ -1,0 +1,26 @@
+@page "{id:guid}"
+@model Web.Pages.Metas.DetailsModel
+@{
+    ViewData["Title"] = "Detalhes da Meta";
+}
+
+<h2>Detalhes da Meta</h2>
+
+@if (Model.Meta == null)
+{
+    <div class="alert alert-danger">Meta não encontrada.</div>
+}
+else
+{
+    <dl class="row">
+        <dt class="col-sm-2">Descrição</dt>
+        <dd class="col-sm-10">@Model.Meta.Descricao</dd>
+        <dt class="col-sm-2">Valor Alvo</dt>
+        <dd class="col-sm-10">@Model.Meta.ValorAlvo.ToString("C")</dd>
+        <dt class="col-sm-2">Valor Acumulado</dt>
+        <dd class="col-sm-10">@Model.Meta.ValorAcumulado.ToString("C")</dd>
+        <dt class="col-sm-2">Data Limite</dt>
+        <dd class="col-sm-10">@Model.Meta.DataLimite.ToShortDateString()</dd>
+    </dl>
+    <a asp-page="Index" class="btn btn-secondary">Voltar</a>
+}

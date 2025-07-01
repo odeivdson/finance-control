@@ -1,0 +1,30 @@
+@page "{id:guid}"
+@model Web.Pages.Transacoes.DeleteModel
+@{
+    ViewData["Title"] = "Excluir Transação";
+}
+
+<h1>Excluir Transação</h1>
+
+<h4>Tem certeza que deseja excluir esta transação?</h4>
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">Descrição</dt>
+        <dd class="col-sm-10">@Model.Transacao.Descricao</dd>
+        <dt class="col-sm-2">Data</dt>
+        <dd class="col-sm-10">@Model.Transacao.Data.ToShortDateString()</dd>
+        <dt class="col-sm-2">Valor</dt>
+        <dd class="col-sm-10">@Model.Transacao.Valor.ToString("C")</dd>
+        <dt class="col-sm-2">Categoria</dt>
+        <dd class="col-sm-10">@Model.CategoriaNome</dd>
+        <dt class="col-sm-2">Tipo</dt>
+        <dd class="col-sm-10">@(Model.Transacao.Tipo == 1 ? "Receita" : "Despesa")</dd>
+        <dt class="col-sm-2">Status</dt>
+        <dd class="col-sm-10">@(Model.Transacao.Status == 1 ? "Pendente" : "Quitado")</dd>
+    </dl>
+    <form method="post">
+        <input type="hidden" asp-for="Transacao.Id" />
+        <button type="submit" class="btn btn-danger">Excluir</button>
+        <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>

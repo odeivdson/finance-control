@@ -1,0 +1,43 @@
+@page "{id:guid}"
+@model Web.Pages.Parcelas.EditModel
+@{
+    ViewData["Title"] = "Editar Parcela";
+}
+
+<h2>Editar Parcela</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+<form method="post">
+    <input type="hidden" name="Parcela.TransacaoId" value="@Model.Parcela.TransacaoId" />
+    <div class="form-group">
+        <label asp-for="Parcela.Numero"></label>
+        <input asp-for="Parcela.Numero" class="form-control" />
+        <span asp-validation-for="Parcela.Numero" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Parcela.Valor"></label>
+        <input asp-for="Parcela.Valor" class="form-control" />
+        <span asp-validation-for="Parcela.Valor" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Parcela.DataVencimento"></label>
+        <input asp-for="Parcela.DataVencimento" class="form-control" type="date" />
+        <span asp-validation-for="Parcela.DataVencimento" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label>Status</label>
+        <select name="Parcela.Status" class="form-select">
+            @{
+                var status = Model.Parcela.Status;
+                @Html.Raw("<option value=\"1\"" + (status == 1 ? " selected" : "") + ">Pendente</option>");
+                @Html.Raw("<option value=\"2\"" + (status == 2 ? " selected" : "") + ">Quitado</option>");
+            }
+        </select>
+        <span asp-validation-for="Parcela.Status" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Salvar</button>
+    <a asp-page="Index" asp-route-transacaoId="@Model.Parcela.TransacaoId" class="btn btn-secondary">Voltar</a>
+</form>

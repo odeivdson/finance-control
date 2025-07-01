@@ -1,0 +1,19 @@
+@page "{id:guid}"
+@model Web.Pages.Categorias.DeleteModel
+@{
+    ViewData["Title"] = "Excluir Categoria";
+}
+
+<h2>Excluir Categoria</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+<form method="post">
+    <div class="form-group">
+        <label>Tem certeza que deseja excluir a categoria <strong>@Model.Categoria.Nome</strong>?</label>
+    </div>
+    <button type="submit" class="btn btn-danger">Excluir</button>
+    <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
+</form>

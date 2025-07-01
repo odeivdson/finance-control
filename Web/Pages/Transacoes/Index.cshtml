@@ -1,0 +1,109 @@
+@page
+@model Web.Pages.Transacoes.IndexModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Transações";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-5"><i class="bi bi-cash-coin"></i> Transações</h1>
+    <a asp-page="Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Nova Transação</a>
+</div>
+
+<form method="get" class="row g-3 mb-4 bg-light p-3 rounded shadow-sm">
+    <div class="col-md-3">
+        <label for="DataInicio" class="form-label">Data Início</label>
+        <input type="date" name="DataInicio" value="@Model.Filtro.DataInicio?.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label for="DataFim" class="form-label">Data Fim</label>
+        <input type="date" name="DataFim" value="@Model.Filtro.DataFim?.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <label for="Tipo" class="form-label">Tipo</label>
+        <select name="Tipo" class="form-select">
+            @Html.Raw("<option value=\"\">Todos</option>")
+            @Html.Raw("<option value=\"1\"" + (Model.Filtro.Tipo == 1 ? " selected" : "") + ">Receita</option>")
+            @Html.Raw("<option value=\"2\"" + (Model.Filtro.Tipo == 2 ? " selected" : "") + ">Despesa</option>")
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label for="Status" class="form-label">Status</label>
+        <select name="Status" class="form-select">
+            @Html.Raw("<option value=\"\">Todos</option>")
+            @Html.Raw("<option value=\"1\"" + (Model.Filtro.Status == 1 ? " selected" : "") + ">Pendente</option>")
+            @Html.Raw("<option value=\"2\"" + (Model.Filtro.Status == 2 ? " selected" : "") + ">Quitado</option>")
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label for="CategoriaId" class="form-label">Categoria</label>
+        <select name="CategoriaId" class="form-select">
+            @Html.Raw("<option value=\"\">Todas</option>")
+            @foreach (var cat in Model.CategoriasFiltro)
+            {
+                var selected = Model.Filtro.CategoriaId.HasValue && Model.Filtro.CategoriaId.Value.ToString() == cat.Value ? " selected" : "";
+                @Html.Raw($"<option value=\"{cat.Value}\"{selected}>{cat.Text}</option>")
+            }
+        </select>
+    </div>
+    <div class="col-md-12 d-flex justify-content-end">
+        <button type="submit" class="btn btn-outline-primary mt-2"><i class="bi bi-search"></i> Filtrar</button>
+    </div>
+</form>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table table-hover table-bordered shadow-sm">
+    <thead class="table-light">
+        <tr>
+            <th>Descrição</th>
+            <th>Data</th>
+            <th>Valor</th>
+            <th>Categoria</th>
+            <th>Tipo</th>
+            <th>Status</th>
+            <th style="width:180px">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var transacao in Model.Transacoes)
+    {
+        <tr>
+            <td>@transacao.Descricao</td>
+            <td>@transacao.Data.ToShortDateString()</td>
+            <td>@transacao.Valor.ToString("C")</td>
+            <td>@Model.CategoriasFiltro.FirstOrDefault(c => c.Value == transacao.CategoriaId.ToString())?.Text</td>
+            <td>@(transacao.Tipo == 1 ? "Receita" : "Despesa")</td>
+            <td>@(transacao.Status == 1 ? "Pendente" : "Quitado")</td>
+            <td>
+                <a asp-page="Details" asp-route-id="@transacao.Id" class="btn btn-info btn-sm"><i class="bi bi-eye"></i></a>
+                <a asp-page="Edit" asp-route-id="@transacao.Id" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
+                <a asp-page="Delete" asp-route-id="@transacao.Id" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@if (Model.TotalPages > 1)
+{
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="?CurrentPage=@(Model.CurrentPage - 1)@Model.GetQueryString()" tabindex="-1">Anterior</a>
+            </li>
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                    <a class="page-link" href="?CurrentPage=@i@Model.GetQueryString()">@i</a>
+                </li>
+            }
+            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                <a class="page-link" href="?CurrentPage=@(Model.CurrentPage + 1)@Model.GetQueryString()">Próxima</a>
+            </li>
+        </ul>
+    </nav>
+}

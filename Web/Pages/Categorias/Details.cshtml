@@ -1,0 +1,20 @@
+@page "{id:guid}"
+@model Web.Pages.Categorias.DetailsModel
+@{
+    ViewData["Title"] = "Detalhes da Categoria";
+}
+
+<h2>Detalhes da Categoria</h2>
+
+@if (Model.Categoria == null)
+{
+    <div class="alert alert-danger">Categoria não encontrada.</div>
+}
+else
+{
+    <dl class="row">
+        <dt class="col-sm-2">Nome</dt>
+        <dd class="col-sm-10">@Model.Categoria.Nome</dd>
+    </dl>
+    <a asp-page="Index" class="btn btn-secondary">Voltar</a>
+}
