@@ -45,19 +45,27 @@ namespace Application.Services
 
         public Task AddAsync(TransacaoDto dto)
         {
-            // Regras de negócio podem ser aplicadas aqui
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+            if (string.IsNullOrWhiteSpace(dto.Descricao)) throw new ArgumentException("Descrição é obrigatória");
+            if (dto.Valor <= 0) throw new ArgumentException("Valor deve ser maior que zero");
+            if (dto.CategoriaId == Guid.Empty) throw new ArgumentException("CategoriaId inválido");
+            if (dto.Tipo != 1 && dto.Tipo != 2) throw new ArgumentException("Tipo inválido");
             return _transacaoRepository.AddAsync(dto);
         }
 
         public Task UpdateAsync(TransacaoDto dto)
         {
-            // Regras de negócio podem ser aplicadas aqui
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+            if (string.IsNullOrWhiteSpace(dto.Descricao)) throw new ArgumentException("Descrição é obrigatória");
+            if (dto.Valor <= 0) throw new ArgumentException("Valor deve ser maior que zero");
+            if (dto.CategoriaId == Guid.Empty) throw new ArgumentException("CategoriaId inválido");
+            if (dto.Tipo != 1 && dto.Tipo != 2) throw new ArgumentException("Tipo inválido");
             return _transacaoRepository.UpdateAsync(dto);
         }
 
         public Task DeleteAsync(Guid id)
         {
-            // Regras de negócio podem ser aplicadas aqui
+            if (id == Guid.Empty) throw new ArgumentException("Id inválido");
             return _transacaoRepository.DeleteAsync(id);
         }
     }
